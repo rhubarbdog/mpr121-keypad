@@ -1,5 +1,5 @@
 import pyb
-import keypad
+import pyboard_keypad as keypad
 import time
 
 i2c = pyb.I2C(2, pyb.I2C.MASTER)
