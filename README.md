@@ -16,5 +16,4 @@ The `PROXIMITY` object has 2 user methods
 <tr><td><code>.get_presses()</code></td><td>integer</td><td>returns the number of times the key has been pressed since the last call to the <code>.get_presses()</code> method.</td></tr>
 </table>
 
-With the exception of `microbit_keypad.py`, object `KEYPAD` has no user methods.  KEY states and PROXIMITY to the sensor are accessed by methods on the dictionay `KEYPAD.key` or object `KEYPAD.keypad`.
-Because the microbit can't react to pin events such as a rising edge programs should use method `KEYPAD.sleep()` rather than function `microbit.sleep()`. Method `KEYPAD.sleep()` polls the request pin and if necessary reads the keypad and updates the `PROXIMITY` and `KEY` objects. If your program has no sleeps, it should include frequent calls to method `KEYPAD.sleep(0)`, which will poll the request pin and update the internal objects if required.
+Object `KEYPAD` has no user methods, KEY states and PROXIMITY to the sensor are accessed by methods on the dictionay `KEYPAD.key` or object `KEYPAD.keypad`.
