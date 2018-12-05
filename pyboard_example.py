@@ -1,3 +1,4 @@
+# gnd rq 3.3v sda scl
 import pyb
 import pyboard_keypad as keypad
 import time

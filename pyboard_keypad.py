@@ -1,5 +1,4 @@
 import pyb
-import micropython
 
 class KEY:
 
@@ -60,7 +59,7 @@ class KEYPAD:
     def __init__(self, i2c, rq_pin, address = 0x5a):
         self._i2c = i2c
         self._address = address
-        self._dummy_read_key = self._read_keys
+        self._buffer = bytearray(2)
 
         self._pads = ( KEY('1'), KEY('4'), KEY('7'), KEY('*'),
                        KEY('2'), KEY('5'), KEY('8'), KEY('0'),
@@ -93,7 +92,7 @@ class KEYPAD:
         self.switch_on()
 
         pyb.ExtInt(rq_pin, pyb.ExtInt.IRQ_FALLING,
-                   pyb.Pin.PULL_UP, self._schedule_cb)
+                   pyb.Pin.PULL_UP, self._read_keys)
 
     def _configure(self):
         self.reset()
@@ -158,13 +157,10 @@ class KEYPAD:
     def switch_on(self):
         self._i2c.send(b'\x5e\xbc', self._address)
 
-    def _schedule_cb(self, line):
-        micropython.schedule(self._dummy_read_key, None)
-
     def _read_keys(self, line):
         self._i2c.send(b'\x00', self._address)
-        keys = bytearray(self._i2c.recv(2, self._address))
-        keycode = (keys[1] & 0x1f) << 8 | keys[0]
+        self._i2c.recv(self._buffer, self._address)
+        keycode = (self._buffer[1] & 0x1f) << 8 | self._buffer[0]
 
         # keys 0 to 9 and # & *
         for i in range(12):
