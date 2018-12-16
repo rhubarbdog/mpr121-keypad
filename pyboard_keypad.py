@@ -136,20 +136,8 @@ class KEYPAD:
                 data[1] = datum
                 self._i2c.send(data, self._address)
 
-        self._i2c.send(b'\x059\x06', self._address) # proximity Touch
-        self._i2c.send(b'\x05a\x04', self._address) # proximity Release
-        #touce/release interupt debounce
-        self._i2c.send(b'\x058\x00', self._address)
-        #AFE and filter config
-        self._i2c.send(b'\x05c\x10', self._address)
-        self._i2c.send(b'\x05d\x24', self._address)
-        self._i2c.send(b'\x05e\x80', self._address)
-        # Auto config
-        self._i2c.send(b'\x07b\x0B', self._address)
-        self._i2c.send(b'\x07c\x80', self._address)
-        self._i2c.send(b'\x07d\xc8', self._address)
-        self._i2c.send(b'\x07e\x82', self._address)
-        self._i2c.send(b'\x07f\xb4', self._address)
+        # This code was full of typos, when repaired the keypad no longer
+        # worked, so it's been culled
         
     def reset(self):
         self._i2c.send(b'\x80\x63', self._address)
