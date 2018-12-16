@@ -5,7 +5,6 @@ from fcntl import ioctl
 IOCTL_I2C_SLAVE = 0x0703
 
 class KEY:
-
     def __init__(self, symbol):
         self._symbol = symbol
         self._is_pressed = False
@@ -36,9 +35,7 @@ class KEY:
     def _release(self):
         self._is_pressed = False
 
-
 class PROXIMITY:
-
     def __init__(self):
         self._is_near = False
         self._was_near = False
@@ -58,9 +55,7 @@ class PROXIMITY:
     def _far_away(self):
         self._is_near = False
 
-
 class KEYPAD:
-
     def __init__(self, i2c, rq_pin, address = 0x5a):
         self._fd = posix.open('/dev/i2c-%d' % i2c, posix.O_RDWR)
         ioctl(self._fd, IOCTL_I2C_SLAVE, address)
@@ -68,11 +63,11 @@ class KEYPAD:
         self._rq_pin=rq_pin
         GPIO.setup(self._rq_pin, GPIO.IN, GPIO.PUD_UP)
         GPIO.add_event_detect(self._rq_pin, GPIO.FALLING,
-                              callback=self._read_keys)
+                              callback=self.read_keys)
 
         self._pads = ( KEY('1'), KEY('4'), KEY('7'), KEY('*'),
-                       KEY('2'), KEY('5'), KEY('8'), KEY('0'),
-                       KEY('3'), KEY('6'), KEY('9'), KEY('#') )
+                      KEY('2'), KEY('5'), KEY('8'), KEY('0'),
+                      KEY('3'), KEY('6'), KEY('9'), KEY('#') )
         self.keypad = PROXIMITY() 
         self.key = { 1 : self._pads[0],
                      2 : self._pads[4],
@@ -145,20 +140,8 @@ class KEYPAD:
                 data[1] = datum
                 posix.write(self._fd, data)
 
-        posix.write(self._fd, b'\x059\x06') # proximity Touch
-        posix.write(self._fd, b'\x05a\x04') # proximity Release
-        #touce/release interupt debounce
-        posix.write(self._fd, b'\x058\x00')
-        #AFE and filter config
-        posix.write(self._fd, b'\x05c\x10')
-        posix.write(self._fd, b'\x05d\x24')
-        posix.write(self._fd, b'\x05e\x80')
-        # Auto config
-        posix.write(self._fd, b'\x07b\x0B')
-        posix.write(self._fd, b'\x07c\x80')
-        posix.write(self._fd, b'\x07d\xc8')
-        posix.write(self._fd, b'\x07e\x82')
-        posix.write(self._fd, b'\x07f\xb4')
+        # the code below contained typos and proximity works better
+        # without this
         
     def reset(self):
         posix.write(self._fd, b'\x80\x63')
@@ -166,7 +149,7 @@ class KEYPAD:
     def switch_on(self):
         posix.write(self._fd, b'\x5e\xbc')
 
-    def _read_keys(self, pin):
+    def read_keys(self, pin):
         posix.write(self._fd, b'\x00')
         keys = bytearray(posix.read(self._fd,2))
         keycode = (keys[1] & 0x1f) << 8 | keys[0]
